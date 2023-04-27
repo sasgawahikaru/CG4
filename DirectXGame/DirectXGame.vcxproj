@@ -96,6 +96,7 @@
     <ClCompile Include="camera\DebugCamera.cpp" />
     <ClCompile Include="2d\DebugText.cpp" />
     <ClCompile Include="base\DirectXCommon.cpp" />
+    <ClCompile Include="Model.cpp" />
     <ClCompile Include="scene\GameScene.cpp" />
     <ClCompile Include="input\Input.cpp" />
     <ClCompile Include="main.cpp" />
@@ -123,6 +124,7 @@
     <ClInclude Include="camera\DebugCamera.h" />
     <ClInclude Include="2d\DebugText.h" />
     <ClInclude Include="base\DirectXCommon.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="scene\GameScene.h" />
     <ClInclude Include="input\Input.h" />
     <ClInclude Include="SafeDelete.h" />

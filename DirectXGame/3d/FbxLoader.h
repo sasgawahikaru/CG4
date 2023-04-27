@@ -4,6 +4,7 @@
 #include <d3d12.h>
 #include <d3dx12.h>
 #include <string>
+#include "Model.h"
 
 class FbxLoader
 {
@@ -43,4 +44,6 @@ public:
 	static const string baseDirectory;
 
 	void LoadModelFromFile(const string& modelName);
+
+	void ParseNodeRecursive(Model* model, FbxNode* fbxNode, Node* parent = nullptr);
 };
