@@ -43,7 +43,17 @@ private:
 public:
 	static const string baseDirectory;
 
+	static const string defaultTextureFileName;
+
 	void LoadModelFromFile(const string& modelName);
 
 	void ParseNodeRecursive(Model* model, FbxNode* fbxNode, Node* parent = nullptr);
+
+	void ParseMesh(Model* model, FbxNode* fbxNode);
+
+	void ParseMeshVertices(Model* model, FbxMesh* fbxMesh);
+	void ParseMeshFaces(Model* model, FbxMesh* fbxMesh);
+	void ParseMaterial(Model* model, FbxNode* fbxNode);
+	void LoadTexture(Model* model, const std::string& fullpath);
+	std::string ExtractFileName(const std::string& path);
 };
