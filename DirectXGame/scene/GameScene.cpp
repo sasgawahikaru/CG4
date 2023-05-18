@@ -3,6 +3,7 @@
 #include <sstream>
 #include <iomanip>
 #include "FbxLoader.h"
+#include "Object3d.h"
 
 using namespace DirectX;
 
@@ -14,9 +15,11 @@ GameScene::~GameScene()
 {
 	safe_delete(spriteBG);
 	safe_delete(lightGroup);
+	safe_delete(object1);
+	safe_delete(model1);
 }
 
-void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio * audio)
+void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 {
 	// nullptrチェック
 	assert(dxCommon);
@@ -33,7 +36,7 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio * audio)
 	// デバッグテキスト用テクスチャ読み込み
 	if (!Sprite::LoadTexture(debugTextTexNumber, L"Resources/debugfont.png")) {
 		assert(0);
-		return ;
+		return;
 	}
 	// デバッグテキスト初期化
 	debugText = DebugText::GetInstance();
@@ -57,10 +60,20 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio * audio)
 	lightGroup = LightGroup::Create();
 
 	// カメラ注視点をセット
-	camera->SetTarget({0, 1, 0});
+	camera->SetTarget({ 0, 1, 0 });
 	camera->SetDistance(3.0f);
 
-	FbxLoader::GetInstance()->LoadModelFromFile("cube");
+	//FbxLoader::GetInstance()->LoadModelFromFile("cube");
+	model1 = FbxLoader::GetInstance()->LoadModelFromFile("cube");
+
+	Object3d::SetDevice(dxCommon->GetDevice());
+	Object3d::SetCamera(camera);
+
+	Object3d::CreateGraphicsPipeline();
+
+	object1 = new Object3d;
+	object1->Initialize();
+	object1->SetModel(model1);
 }
 
 void GameScene::Update()
@@ -68,6 +81,7 @@ void GameScene::Update()
 	lightGroup->Update();
 	camera->Update();
 	particleMan->Update();
+	object1->Update();
 }
 
 void GameScene::Draw()
@@ -92,9 +106,10 @@ void GameScene::Draw()
 #pragma endregion
 
 #pragma region 3D描画
-
+	object1->Draw(cmdList);
 	// パーティクルの描画
 	particleMan->Draw(cmdList);
+
 #pragma endregion
 
 #pragma region 前景スプライト描画

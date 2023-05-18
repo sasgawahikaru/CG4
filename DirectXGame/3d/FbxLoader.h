@@ -45,7 +45,7 @@ public:
 
 	static const string defaultTextureFileName;
 
-	void LoadModelFromFile(const string& modelName);
+	Model* LoadModelFromFile(const string& modelName);
 
 	void ParseNodeRecursive(Model* model, FbxNode* fbxNode, Node* parent = nullptr);
 

@@ -24,10 +24,7 @@ class Model
 {
 public:
 	friend class FbxLoader;
-private:
-	std::string name;
-	std::vector<Node>nodes;
-public:
+
 	struct VertexPosNormalUv
 	{
 		DirectX::XMFLOAT3 pos;
@@ -42,6 +39,13 @@ public:
 	DirectX::XMFLOAT3 diffuse = { 1,1,1 };
 	DirectX::TexMetadata metadata = {};
 	DirectX::ScratchImage scratchImg = {};
+
+	void CreateBuffers(ID3D12Device* device);
+	void Draw(ID3D12GraphicsCommandList* cmdList);
+
+private:
+	std::string name;
+	std::vector<Node>nodes;
 
 private:
 	template<class T>using ComPtr =
@@ -65,9 +69,5 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vbView = {};
 	D3D12_INDEX_BUFFER_VIEW ibView = {};
 	ComPtr<ID3D12DescriptorHeap> descHeapSRV;
-
-	void CreateBuffers(ID3D12Device* device);
-	void Draw(ID3D12GraphicsCommandList* cmdList);
-
 	const XMMATRIX& GetModelTransform() { return meshNode->globalTransform; }
 };
