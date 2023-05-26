@@ -32,15 +32,17 @@ protected:
 public:
 	static void SetDevice(ID3D12Device* device) { Object3d::device = device; }
 	static void SetCamera(Camera* camera) { Object3d::camera = camera; }
+	static void CreateGraphicsPipeline();
 
+public:
 	struct ConstBufferDataTransform
 	{
 		XMMATRIX viewproj;
 		XMMATRIX world;
 		XMFLOAT3 cameraPos;
 	};
-	
 
+public:
 	void Initialize();
 
 	void Update();
@@ -48,8 +50,6 @@ public:
 	void SetModel(Model* model) { this->model = model; }
 
 	void Draw(ID3D12GraphicsCommandList* cmdList);
-	
-	static void CreateGraphicsPipeline();
 
 protected:
 	ComPtr<ID3D12Resource>constBuffTransform;
@@ -59,15 +59,5 @@ private:
 
 	static ComPtr<ID3D12RootSignature> rootsignature;
 	static ComPtr<ID3D12PipelineState> pipelinestate;
-	//public:
-	//	struct ConstBufferDataTransform
-	//	{
-	//		XMMATRIX viewproj;
-	//		XMMATRIX world;
-	//		XMFLOAT3 cameraPos;
-	//	};
-	//public:
-	//	void Initialize();
-	//protected:
-	//	ComPtr<ID3D12Resource>constBuffTransform;
+
 };

@@ -22,7 +22,7 @@ void Model::CreateBuffers(ID3D12Device* device)
 		vertBuff->Unmap(0, nullptr);
 	}
 	vbView.BufferLocation =
-		vertBuff->GetGPUVirtualAddress();
+	vertBuff->GetGPUVirtualAddress();
 	vbView.SizeInBytes = sizeVB;
 	vbView.StrideInBytes = sizeof(vertices[0]);
 

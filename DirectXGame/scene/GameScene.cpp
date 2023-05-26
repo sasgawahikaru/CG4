@@ -30,6 +30,7 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	this->input = input;
 	this->audio = audio;
 
+
 	// カメラ生成
 	camera = new DebugCamera(WinApp::window_width, WinApp::window_height, input);
 
@@ -60,16 +61,17 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 	lightGroup = LightGroup::Create();
 
 	// カメラ注視点をセット
-	camera->SetTarget({ 0, 1, 0 });
-	camera->SetDistance(3.0f);
-
-	//FbxLoader::GetInstance()->LoadModelFromFile("cube");
-	model1 = FbxLoader::GetInstance()->LoadModelFromFile("cube");
+	camera->SetTarget({ 0, 20, 0 });
+	camera->SetDistance(100.0f);
 
 	Object3d::SetDevice(dxCommon->GetDevice());
 	Object3d::SetCamera(camera);
 
 	Object3d::CreateGraphicsPipeline();
+
+	//FbxLoader::GetInstance()->LoadModelFromFile("cube");
+	model1 = FbxLoader::GetInstance()->LoadModelFromFile("cube");
+
 
 	object1 = new Object3d;
 	object1->Initialize();
