@@ -37,7 +37,7 @@ public: // メンバ関数
 	/// <summary>
 	/// コンストクラタ
 	/// </summary>
-	GameScene();
+	GameScene();     
 
 	/// <summary>
 	/// デストラクタ

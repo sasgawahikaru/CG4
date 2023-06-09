@@ -1,6 +1,6 @@
 #include "Object3d.h"
-#include <d3dcompiler.h>
 
+#include <d3dcompiler.h>
 #pragma comment(lib,"d3dcompiler.lib")
 
 using namespace Microsoft::WRL;

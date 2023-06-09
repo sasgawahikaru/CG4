@@ -17,6 +17,7 @@ GameScene::~GameScene()
 	safe_delete(lightGroup);
 	safe_delete(object1);
 	safe_delete(model1);
+
 }
 
 void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
@@ -69,7 +70,6 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 
 	Object3d::CreateGraphicsPipeline();
 
-	//FbxLoader::GetInstance()->LoadModelFromFile("cube");
 	model1 = FbxLoader::GetInstance()->LoadModelFromFile("cube");
 
 

@@ -1,5 +1,6 @@
 ﻿#include "FbxLoader.h"
 #include <cassert>
+
 const std::string FbxLoader::baseDirectory = "Resources/";
 const std::string FbxLoader::defaultTextureFileName = "white1x1.png";
 using namespace DirectX;
@@ -59,6 +60,7 @@ Model* FbxLoader::LoadModelFromFile(const string& modelName)
     fbxScene->Destroy();
 
     model->CreateBuffers(device);
+
     return model;
 }
 

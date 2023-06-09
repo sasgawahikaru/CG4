@@ -1,5 +1,4 @@
 #pragma once
-#pragma once
 
 #include"Model.h"
 #include"Camera.h"
@@ -34,6 +33,13 @@ public:
 	static void SetCamera(Camera* camera) { Object3d::camera = camera; }
 	static void CreateGraphicsPipeline();
 
+private:
+	static ID3D12Device* device;
+	static Camera* camera;
+
+	static ComPtr<ID3D12RootSignature> rootsignature;
+	static ComPtr<ID3D12PipelineState> pipelinestate;
+
 public:
 	struct ConstBufferDataTransform
 	{
@@ -53,11 +59,5 @@ public:
 
 protected:
 	ComPtr<ID3D12Resource>constBuffTransform;
-private:
-	static ID3D12Device* device;
-	static Camera* camera;
-
-	static ComPtr<ID3D12RootSignature> rootsignature;
-	static ComPtr<ID3D12PipelineState> pipelinestate;
 
 };
