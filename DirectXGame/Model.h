@@ -7,6 +7,7 @@
 #include <wrl.h>
 #include <d3d12.h>
 #include <d3dx12.h>
+#include <fbxsdk.h>
 
 struct Node
 {
@@ -25,22 +26,44 @@ class Model
 {
 public:
 	friend class FbxLoader;
+
+public:
+	struct Bone
+	{
+		std::string name;
+		DirectX::XMMATRIX invInitialPose;
+		FbxCluster* fbxCluster;
+		Bone(const std::string& name)
+		{
+			this->name = name;
+		}
+	};
 private:
 	std::string name;
 	std::vector<Node> nodes;
 
+	std::vector<Bone> bones;
+	std::vector<Bone>& GetBones() { return bones; }
 public:
-	struct VertexPosNormalUv
+	static const int MAX_BONE_INDICES = 4;
+
+public:
+	struct VertexPosNormalUvSkin
 	{
 		DirectX::XMFLOAT3 pos;
 		DirectX::XMFLOAT3 normal;
 		DirectX::XMFLOAT2 uv;
+		UINT boneIndex[MAX_BONE_INDICES];
+		float boneWeight[MAX_BONE_INDICES];
 	};
 
 	Node* meshNode = nullptr;
-	std::vector<VertexPosNormalUv>vertices;
+	std::vector<VertexPosNormalUvSkin>vertices;
 	std::vector<unsigned short>indices;
-	
+
+	FbxScene* fbxScene = nullptr;
+
+	~Model();
 private:
 	DirectX::XMFLOAT3 ambient = { 1,1,1 };
 	DirectX::XMFLOAT3 diffuse = { 1,1,1 };
@@ -71,6 +94,7 @@ private:
 	D3D12_INDEX_BUFFER_VIEW ibView = {};
 	ComPtr<ID3D12DescriptorHeap> descHeapSRV;
 
+	FbxScene* GetFbxScene() { return fbxScene; }
 public:
 	void CreateBuffers(ID3D12Device* device);
 	void Draw(ID3D12GraphicsCommandList* cmdList);

@@ -57,7 +57,8 @@ Model* FbxLoader::LoadModelFromFile(const string& modelName)
 
     ParseNodeRecursive(model, fbxScene->GetRootNode());
 
-    fbxScene->Destroy();
+ //   fbxScene->Destroy();
+    model->fbxScene = fbxScene;
 
     model->CreateBuffers(device);
 
@@ -128,6 +129,8 @@ void FbxLoader::ParseMesh(Model* model, FbxNode* fbxNode)
     ParseMeshFaces(model, fbxMesh);
     
     ParseMaterial(model, fbxNode);
+
+    ParseSkin(model, fbxMesh);
 }
 
 void FbxLoader::ParseMeshVertices(Model* model, FbxMesh* fbxMesh)
@@ -137,14 +140,14 @@ void FbxLoader::ParseMeshVertices(Model* model, FbxMesh* fbxMesh)
     const int controlPointsCount =
         fbxMesh->GetControlPointsCount();
 
-    Model::VertexPosNormalUv vert{};
+    Model::VertexPosNormalUvSkin vert{};
     model->vertices.resize(controlPointsCount, vert);
 
     FbxVector4* pCoord = fbxMesh->GetControlPoints();
 
     for (int i = 0; i < controlPointsCount; i++)
     {
-        Model::VertexPosNormalUv& vertex = vertices[i];
+        Model::VertexPosNormalUvSkin& vertex = vertices[i];
 
         vertex.pos.x = (float)pCoord[i][0];
         vertex.pos.y = (float)pCoord[i][1];
@@ -175,7 +178,7 @@ void FbxLoader::ParseMeshFaces(Model* model, FbxMesh* fbxMesh)
         {
             int index = fbxMesh->GetPolygonVertex(i, j);
             assert(index >= 0);
-            Model::VertexPosNormalUv& vertex = vertices[index];
+            Model::VertexPosNormalUvSkin& vertex = vertices[index];
             FbxVector4 normal;
             if (fbxMesh->GetPolygonVertexNormal(i, j, normal))
             {
@@ -289,4 +292,93 @@ std::string FbxLoader::ExtractFileName(const std::string& path)
         return path.substr(pos1 + 1, path.size() - pos1 - 1);
     }
     return path;
+}
+
+void FbxLoader::ConvertMatrixFromFbx(DirectX::XMMATRIX* dst, const FbxAMatrix& src)
+{
+    for (int i = 0; i < 4; i++) {
+        for (int j = 0; j < 4; j++) {
+            dst->r[i].m128_f32[j] = (float)src.Get(i, j);
+        }
+    }
+
+}
+
+void FbxLoader::ParseSkin(Model* model, FbxMesh* fbxMesh)
+{
+    FbxSkin* fbxSkin =
+    static_cast<FbxSkin*>(fbxMesh->GetDeformer(0,
+    FbxDeformer::eSkin));
+
+    if (fbxSkin == nullptr) {
+        return;
+    }
+    std::vector<Model::Bone>& bones = model->bones;
+
+    int clusterCount = fbxSkin->GetClusterCount();
+    bones.reserve(clusterCount);
+
+    for (int i = 0; i < clusterCount; i++)
+    {
+        FbxCluster* fbxCluster = fbxSkin->GetCluster(i);
+        const char* boneName = fbxCluster->GetLink()->GetName();
+
+        bones.emplace_back(Model::Bone(boneName));
+        Model::Bone& bone = bones.back();
+
+        bone.fbxCluster = fbxCluster;
+
+        FbxAMatrix fbxMat;
+        fbxCluster->GetTransformLinkMatrix(fbxMat);
+
+        XMMATRIX initialPose;
+        ConvertMatrixFromFbx(&initialPose, fbxMat);
+
+        bone.invInitialPose = XMMatrixInverse(nullptr, initialPose);
+    }
+    struct WeightSet {
+        UINT index;
+        float weight;
+    };
+    std::vector<std::list<WeightSet>>
+        weightLists(model->vertices.size());
+
+    for (int i = 0; i < clusterCount;i++) {
+        FbxCluster* fbxCluster = fbxSkin->GetCluster(i);
+        int controlPointIndicesCount = fbxCluster->GetControlPointIndicesCount();
+
+        int* controlPointIndices = fbxCluster->GetControlPointIndices();
+        double* controlPointWeights = fbxCluster->GetControlPointWeights();
+
+        for (int j = 0; j < controlPointIndicesCount; j++) {
+            int vertIndex = controlPointIndices[j];
+            float weight = (float)controlPointWeights[j];
+            weightLists[vertIndex].emplace_back(WeightSet{ (UINT)i,weight });
+        }
+    }
+    auto& vertices = model->vertices;
+    for (int i = 0; i < vertices.size(); i++)
+    {
+        auto& weightList = weightLists[i];
+        weightList.sort(
+            [](auto const& lhs, auto const& rhs) {
+                return lhs.weight > rhs.weight;
+            });
+        int weightArrayIndex = 0;
+        for (auto& weightSet : weightList)
+        {
+            vertices[i].boneIndex[weightArrayIndex] = weightSet.index;
+            vertices[i].boneWeight[weightArrayIndex] = weightSet.weight;
+            if (++weightArrayIndex >= Model::MAX_BONE_INDICES)
+            {
+                float weight = 0.0f;
+                for (int j = 1; j < Model::MAX_BONE_INDICES; j++)
+                {
+                    weight += vertices[i].boneWeight[j];
+                }
+                vertices[i].boneWeight[0] = 1.0f - weight;
+                break;
+            }
+        }
+    }
 }

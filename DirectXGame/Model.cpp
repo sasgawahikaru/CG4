@@ -4,7 +4,7 @@ void Model::CreateBuffers(ID3D12Device* device)
 {
 	HRESULT result;
 	UINT sizeVB =
-	static_cast<UINT>(sizeof(VertexPosNormalUv) *
+	static_cast<UINT>(sizeof(VertexPosNormalUvSkin) *
 	vertices.size());
 
 	result = device->CreateCommittedResource(
@@ -15,7 +15,7 @@ void Model::CreateBuffers(ID3D12Device* device)
 		nullptr,
 		IID_PPV_ARGS(&vertBuff));
 
-	VertexPosNormalUv* vertMap = nullptr;
+	VertexPosNormalUvSkin* vertMap = nullptr;
 	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
 	if (SUCCEEDED(result)) {
 		std::copy(vertices.begin(), vertices.end(), vertMap);
@@ -109,4 +109,8 @@ void Model::Draw(ID3D12GraphicsCommandList* cmdList)
 		descHeapSRV->GetGPUDescriptorHandleForHeapStart());
 
 	cmdList->DrawIndexedInstanced((UINT)indices.size(), 1, 0, 0, 0);
+}
+Model::~Model()
+{
+	fbxScene->Destroy();
 }

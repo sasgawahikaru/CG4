@@ -56,4 +56,6 @@ public:
 	void ParseMaterial(Model* model, FbxNode* fbxNode);
 	void LoadTexture(Model* model, const std::string& fullpath);
 	std::string ExtractFileName(const std::string& path);
+	static void ConvertMatrixFromFbx(DirectX::XMMATRIX* dst, const FbxAMatrix& src);
+	void ParseSkin(Model* model, FbxMesh* fbxMesh);
 };
