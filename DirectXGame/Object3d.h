@@ -40,6 +40,7 @@ private:
 	static ComPtr<ID3D12RootSignature> rootsignature;
 	static ComPtr<ID3D12PipelineState> pipelinestate;
 	ComPtr<ID3D12Resource>constBuffSkin;
+	ComPtr<ID3D12Resource>constBuffTransform;
 
 public:
 	struct ConstBufferDataTransform
@@ -57,9 +58,6 @@ public:
 	void SetModel(Model* model) { this->model = model; }
 
 	void Draw(ID3D12GraphicsCommandList* cmdList);
-
-protected:
-	ComPtr<ID3D12Resource>constBuffTransform;
 
 public:
 	static const int MAX_BONES = 32;
