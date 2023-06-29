@@ -43,7 +43,6 @@ private:
 	std::vector<Node> nodes;
 
 	std::vector<Bone> bones;
-	std::vector<Bone>& GetBones() { return bones; }
 public:
 	static const int MAX_BONE_INDICES = 4;
 
@@ -64,6 +63,7 @@ public:
 	FbxScene* fbxScene = nullptr;
 
 	~Model();
+	std::vector<Bone>& GetBones() { return bones; }
 private:
 	DirectX::XMFLOAT3 ambient = { 1,1,1 };
 	DirectX::XMFLOAT3 diffuse = { 1,1,1 };

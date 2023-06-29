@@ -9,6 +9,8 @@ struct VSInput
 	float4 pos:POSITION;
 	float3 normal:NORMAL;
 	float2 uv :TEXCOORD;
+	uint4 boneIndices:BONEINDICES;
+	uint4 boneweights:BONEWEIGHTS;
 };
 struct VSOutput
 {
@@ -16,3 +18,9 @@ struct VSOutput
 	float3 normal:NORMAL;
 	float2 uv :TEXCOORD;
 };
+static const int MAX_BONES = 32;
+
+cbuffer skinning:register(b3)
+{
+	matrix matSkinning[MAX_BONES];
+}

@@ -39,6 +39,7 @@ private:
 
 	static ComPtr<ID3D12RootSignature> rootsignature;
 	static ComPtr<ID3D12PipelineState> pipelinestate;
+	ComPtr<ID3D12Resource>constBuffSkin;
 
 public:
 	struct ConstBufferDataTransform
@@ -60,4 +61,10 @@ public:
 protected:
 	ComPtr<ID3D12Resource>constBuffTransform;
 
+public:
+	static const int MAX_BONES = 32;
+	struct ConstBufferDataSkin
+	{
+		XMMATRIX bones[MAX_BONES];
+	};
 };
