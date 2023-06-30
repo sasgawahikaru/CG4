@@ -63,6 +63,7 @@ public:
 	FbxScene* fbxScene = nullptr;
 
 	~Model();
+
 	std::vector<Bone>& GetBones() { return bones; }
 private:
 	DirectX::XMFLOAT3 ambient = { 1,1,1 };

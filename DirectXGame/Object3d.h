@@ -61,6 +61,7 @@ public:
 
 public:
 	static const int MAX_BONES = 32;
+
 	struct ConstBufferDataSkin
 	{
 		XMMATRIX bones[MAX_BONES];

@@ -1,4 +1,5 @@
 #include "Object3d.h"
+#include "FbxLoader.h"
 
 #include <d3dcompiler.h>
 #pragma comment(lib,"d3dcompiler.lib")
@@ -22,6 +23,14 @@ void Object3d::Initialize()
 		D3D12_RESOURCE_STATE_GENERIC_READ,
 		nullptr,
 		IID_PPV_ARGS(&constBuffTransform));
+
+	result = device->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+		D3D12_HEAP_FLAG_NONE,
+		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferDataSkin) + 0xff) & ~0xff),
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&constBuffSkin));
 
 
 }
@@ -261,11 +270,9 @@ void Object3d::Draw(ID3D12GraphicsCommandList* cmdList)
 
 	cmdList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	cmdList->SetGraphicsRootConstantBufferView(0,
-		constBuffTransform->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(0,constBuffTransform->GetGPUVirtualAddress());
 
-	cmdList->SetGraphicsRootConstantBufferView(2,
-		constBuffSkin->GetGPUVirtualAddress());
+	cmdList->SetGraphicsRootConstantBufferView(2,constBuffSkin->GetGPUVirtualAddress());
 
 	model->Draw(cmdList);
 }
