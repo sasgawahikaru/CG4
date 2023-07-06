@@ -49,6 +49,12 @@ public:
 		XMMATRIX world;
 		XMFLOAT3 cameraPos;
 	};
+public:
+	FbxTime frameTime;
+	FbxTime startTime;
+	FbxTime endTime;
+	FbxTime currentTime;
+	bool isPlay = false;
 
 public:
 	void Initialize();
@@ -59,6 +65,8 @@ public:
 
 	void Draw(ID3D12GraphicsCommandList* cmdList);
 
+	void PlayAnimation();
+
 public:
 	static const int MAX_BONES = 32;
 
@@ -67,3 +75,4 @@ public:
 		XMMATRIX bones[MAX_BONES];
 	};
 };
+

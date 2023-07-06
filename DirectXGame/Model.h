@@ -61,7 +61,7 @@ public:
 	std::vector<unsigned short>indices;
 
 	FbxScene* fbxScene = nullptr;
-
+	FbxScene* GetFbxScene() { return fbxScene; }
 	~Model();
 
 	std::vector<Bone>& GetBones() { return bones; }
@@ -94,8 +94,6 @@ private:
 	D3D12_VERTEX_BUFFER_VIEW vbView = {};
 	D3D12_INDEX_BUFFER_VIEW ibView = {};
 	ComPtr<ID3D12DescriptorHeap> descHeapSRV;
-
-	FbxScene* GetFbxScene() { return fbxScene; }
 public:
 	void CreateBuffers(ID3D12Device* device);
 	void Draw(ID3D12GraphicsCommandList* cmdList);

@@ -32,7 +32,7 @@ void Object3d::Initialize()
 		nullptr,
 		IID_PPV_ARGS(&constBuffSkin));
 
-
+	frameTime.SetTime(0, 0, 0, 1, 0, FbxTime::EMode::eFrames60);
 }
 
 void Object3d::CreateGraphicsPipeline()
@@ -209,6 +209,7 @@ void Object3d::CreateGraphicsPipeline()
 
 void Object3d::Update()
 {
+
 	XMMATRIX matScale, matRot, matTrans;
 
 	matScale = XMMatrixScaling(scale.x, scale.y, scale.z);
@@ -231,7 +232,14 @@ void Object3d::Update()
 	const XMFLOAT3& cameraPos = camera->GetEye();
 
 	HRESULT result;
-
+	if (isPlay)
+	{
+		currentTime += frameTime;
+		if (currentTime > endTime)
+		{
+			currentTime = startTime;
+		}
+	}
 	ConstBufferDataTransform* constMap = nullptr;
 	result = constBuffTransform->Map(0, nullptr, (void**)&constMap);
 	if (SUCCEEDED(result))
@@ -250,13 +258,12 @@ void Object3d::Update()
 	{
 		XMMATRIX matCurrentPose;
 		FbxAMatrix fbxCurrentPose =
-			bones[i].fbxCluster->GetLink()->EvaluateGlobalTransform(0);
+			bones[i].fbxCluster->GetLink()->EvaluateGlobalTransform(currentTime);
 
 		FbxLoader::ConvertMatrixFromFbx(&matCurrentPose, fbxCurrentPose);
 		constMapSkin->bones[i] = bones[i].invInitialPose * matCurrentPose;
 	}
 	constBuffSkin->Unmap(0, nullptr);
-
 }
 
 void Object3d::Draw(ID3D12GraphicsCommandList* cmdList)
@@ -275,4 +282,24 @@ void Object3d::Draw(ID3D12GraphicsCommandList* cmdList)
 	cmdList->SetGraphicsRootConstantBufferView(2,constBuffSkin->GetGPUVirtualAddress());
 
 	model->Draw(cmdList);
+}
+
+void Object3d::PlayAnimation()
+{
+	FbxScene* fbxScene = model->GetFbxScene();
+
+	FbxAnimStack* animstack = fbxScene->GetSrcObject<FbxAnimStack>(0);
+
+	const char* animstackname = animstack->GetName();
+
+	FbxTakeInfo* takeinfo = fbxScene->GetTakeInfo(animstackname);
+
+	startTime = takeinfo->mLocalTimeSpan.GetStart();
+
+	endTime = takeinfo->mLocalTimeSpan.GetStop();
+
+	currentTime = startTime;
+
+	isPlay = true;
+
 }
