@@ -71,7 +71,7 @@ void GameScene::Initialize(DirectXCommon* dxCommon, Input* input, Audio* audio)
 
 	Object3d::CreateGraphicsPipeline();
 
-	model1 = FbxLoader::GetInstance()->LoadModelFromFile("boneTest");
+//	model1 = FbxLoader::GetInstance()->LoadModelFromFile("boneTest");
 
 
 	object1 = new Object3d;

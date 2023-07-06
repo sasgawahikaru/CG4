@@ -311,6 +311,12 @@ void FbxLoader::ParseSkin(Model* model, FbxMesh* fbxMesh)
     FbxDeformer::eSkin));
 
     if (fbxSkin == nullptr) {
+        for (int i = 0; i < model->vertices.size(); i++)
+        {
+            model->vertices[i].boneIndex[0] = 0;
+            model->vertices[i].boneWeight[0] = 1.0f;
+        }
+
         return;
     }
     std::vector<Model::Bone>& bones = model->bones;
