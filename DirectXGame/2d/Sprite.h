@@ -170,7 +170,7 @@ public: // メンバ関数
 	void Draw();
 
 //private: // メンバ変数
-	protected:
+protected:
 	// 頂点バッファ
 	ComPtr<ID3D12Resource> vertBuff;
 	// 定数バッファ
