@@ -10,7 +10,8 @@ public:
 
     void Draw(ID3D12GraphicsCommandList* cmdList);
     void Initialize();
-protected:
+
+private:
     ComPtr<ID3D12Resource>texBuff;
     ComPtr<ID3D12DescriptorHeap>descHeapSRV;
 };
