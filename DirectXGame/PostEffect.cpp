@@ -1,6 +1,8 @@
 #include "PostEffect.h"
 #include <d3dx12.h>
 #include <WinApp.h>
+#include <d3dcompiler.h>
+#pragma comment(lib,"d3dcompiler.lib")
 
 using namespace DirectX;
 const float PostEffect::clearColor[4] = { 0.25f,0.5f,0.1f,0.0f };
@@ -28,7 +30,7 @@ void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)
 	HRESULT result = this->constBuff->Map(0, nullptr, (void**)&constMap);
 	if (SUCCEEDED(result)) {
 		constMap->color = this->color;
-		constMap->mat = this->matWorld * matProjection;	// s—ñ‚Ì‡¬	
+		constMap->mat = XMMatrixIdentity();	// s—ñ‚Ì‡¬	
 		this->constBuff->Unmap(0, nullptr);
 	}
 	cmdList->SetPipelineState(pipelineState.Get());
@@ -55,7 +57,7 @@ void PostEffect::Draw(ID3D12GraphicsCommandList* cmdList)
 void PostEffect::Initialize()
 {
 	HRESULT result;
-	Sprite::Initialize();
+	//Sprite::Initialize();
 
 	CD3DX12_RESOURCE_DESC texresDesc = CD3DX12_RESOURCE_DESC::Tex2D(
 		DXGI_FORMAT_R8G8B8A8_UNORM_SRGB,
@@ -151,7 +153,41 @@ void PostEffect::Initialize()
 		&dsvDesc,
 		descHeapDSV->GetCPUDescriptorHandleForHeapStart());
 
+	result = device->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+		D3D12_HEAP_FLAG_NONE,
+		&CD3DX12_RESOURCE_DESC::Buffer(sizeof(VertexPosUv) *
+			vertNum),
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&vertBuff));
+	assert(SUCCEEDED(result));
 
+	VertexPosUv vertices[vertNum] = {
+		{{-0.5f,-0.5f,0.0f},{0.0f,1.0f,}},
+		{{-0.5f,+0.5f,0.0f},{0.0f,0.0f,}},
+		{{+0.5f,-0.5f,0.0f},{1.0f,1.0f,}},
+		{{+0.5f,+0.5f,0.0f},{1.0f,0.0f,}},
+	};
+	VertexPosUv* vertMap = nullptr;
+	result = vertBuff->Map(0, nullptr, (void**)&vertMap);
+	if (SUCCEEDED(result)) {
+		memcpy(vertMap, vertices, sizeof(vertices));
+		vertBuff->Unmap(0, nullptr);
+	}
+	vbView.BufferLocation = vertBuff->GetGPUVirtualAddress();
+	vbView.SizeInBytes = sizeof(VertexPosUv) * 4;
+	vbView.StrideInBytes = sizeof(VertexPosUv);
+
+	result = device->CreateCommittedResource(
+		&CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD),
+		D3D12_HEAP_FLAG_NONE,
+		&CD3DX12_RESOURCE_DESC::Buffer((sizeof(ConstBufferData) +
+			0xff) & ~0xff),
+		D3D12_RESOURCE_STATE_GENERIC_READ,
+		nullptr,
+		IID_PPV_ARGS(&constBuff));
+	assert(SUCCEEDED(result));
 }
 
 void PostEffect::PreDrawScene(ID3D12GraphicsCommandList* cmdList)
@@ -181,4 +217,9 @@ void PostEffect::PostDrawScene(ID3D12GraphicsCommandList* cmdList)
 {
 	cmdList->ResourceBarrier(1, &CD3DX12_RESOURCE_BARRIER::Transition(texBuff.Get(),
 		D3D12_RESOURCE_STATE_RENDER_TARGET, D3D12_RESOURCE_STATE_PIXEL_SHADER_RESOURCE));
+}
+
+void PostEffect::CreateGraphicsPipelineState()
+{
+
 }

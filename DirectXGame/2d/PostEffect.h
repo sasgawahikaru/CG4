@@ -12,6 +12,7 @@ public:
     void Initialize();
     void PreDrawScene(ID3D12GraphicsCommandList* cmdList);
     void PostDrawScene(ID3D12GraphicsCommandList* cmdList);
+    void CreateGraphicsPipelineState();
     static const float clearColor[4];
 private:
     ComPtr<ID3D12Resource>texBuff;
@@ -19,4 +20,6 @@ private:
     ComPtr<ID3D12DescriptorHeap>descHeapSRV;
     ComPtr<ID3D12DescriptorHeap>descHeapRTV;
     ComPtr<ID3D12DescriptorHeap>descHeapDSV;
+    ComPtr<ID3D12PipelineState>pipelineState;
+    ComPtr<ID3D12RootSignature>rootSignature;
 };
