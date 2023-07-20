@@ -15,7 +15,7 @@ public:
     void CreateGraphicsPipelineState();
     static const float clearColor[4];
 private:
-    ComPtr<ID3D12Resource>texBuff;
+    ComPtr<ID3D12Resource>texBuff[2];
     ComPtr<ID3D12Resource>depthBuff;
     ComPtr<ID3D12DescriptorHeap>descHeapSRV;
     ComPtr<ID3D12DescriptorHeap>descHeapRTV;
