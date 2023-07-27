@@ -10,12 +10,24 @@ float4 main(VSOutput input) : SV_TARGET
 	float4 colortex1 = tex1.Sample(smp,input.uv);
 
 	float4 color = colortex0;
-	if (fmod(input.uv.y, 0.1f) < 0.05f)
+
+	for (float x = 0; x < 20; x++)
 	{
+		for (float y = 0; y < 20; y++)
+		{
+			colortex1 = tex1.Sample(smp, input.uv+color);
+		}
+	}
+
+//	float4 color = colortex0;
+	if (fmod(input.uv.y, 0.1f) < 0.05f)
+	{	
+		return float4(color.rgb, 1);
 		color = colortex1;
+
 	}
 	////通常
-	return float4(color.rgb, 1);
+	return float4(1.0f-color.rgb, 1);
 
 
 
